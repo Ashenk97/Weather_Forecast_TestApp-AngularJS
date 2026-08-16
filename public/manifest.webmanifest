@@ -1,0 +1,16 @@
+{
+  "name": "Skycast Weather Dashboard",
+  "short_name": "Skycast",
+  "description": "Live weather, hourly charts, air quality, and 7-day outlooks.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#1d4f7a",
+  "theme_color": "#1d4f7a",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}

@@ -1,0 +1,19 @@
+<article class="daily-card" data-testid="daily-card">
+  <header>
+    <h3>{{ $ctrl.day.weekday }}</h3>
+    <p>{{ $ctrl.day.date }}</p>
+  </header>
+  <weather-icon type="$ctrl.day.meta.icon"></weather-icon>
+  <p class="daily-label">{{ $ctrl.day.meta.label }}</p>
+  <p class="daily-temps">
+    <strong>{{ $ctrl.convertTemp({ value: $ctrl.day.high }) }}{{ $ctrl.unit }}</strong>
+    <span>{{ $ctrl.convertTemp({ value: $ctrl.day.low }) }}{{ $ctrl.unit }}</span>
+  </p>
+  <div class="range-track" aria-hidden="true">
+    <div
+      class="range-fill"
+      ng-style="{ left: $ctrl.day.rangeLeft + '%', width: $ctrl.day.rangeWidth + '%' }"
+    ></div>
+  </div>
+  <p class="daily-meta">{{ $ctrl.day.precipitationChance || 0 }}% rain · {{ $ctrl.day.precipitation }} mm</p>
+</article>

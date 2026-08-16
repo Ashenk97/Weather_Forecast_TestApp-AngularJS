@@ -1,0 +1,111 @@
+<section class="page home-page">
+  <div class="hero-copy">
+    <p class="eyebrow">{{ $ctrl.greeting }} · Live global weather</p>
+    <h1>A dashboard for the sky above you.</h1>
+    <p class="lede">
+      Search any city or use your location. Skycast layers live conditions,
+      hourly charts, air quality, and a map on top of Open-Meteo data.
+    </p>
+  </div>
+
+  <form class="search-panel search-panel-lg" ng-submit="$ctrl.submitSearch()" autocomplete="off" data-testid="city-search-form">
+    <label class="sr-only" for="city-search">City name</label>
+    <div class="search-row">
+      <input
+        id="city-search"
+        class="search-input"
+        type="text"
+        name="city"
+        ng-model="$ctrl.query"
+        ng-change="$ctrl.onQueryChange()"
+        placeholder="Try Tokyo, Paris, or your city…"
+        data-testid="city-search-input"
+        aria-autocomplete="list"
+        aria-controls="city-suggestions"
+      />
+      <button
+        type="button"
+        class="ghost-btn"
+        ng-click="$ctrl.useMyLocation()"
+        ng-disabled="$ctrl.locating"
+        data-testid="use-location-btn"
+      >
+        <span ng-if="!$ctrl.locating">Use my location</span>
+        <span ng-if="$ctrl.locating">Locating…</span>
+      </button>
+      <button
+        type="submit"
+        class="primary-btn"
+        ng-disabled="$ctrl.searching"
+        data-testid="get-forecast-btn"
+      >
+        Open dashboard
+      </button>
+    </div>
+
+    <ul
+      id="city-suggestions"
+      class="suggestions"
+      ng-if="$ctrl.suggestions.length"
+      data-testid="city-suggestions"
+    >
+      <li ng-repeat="place in $ctrl.suggestions">
+        <button
+          type="button"
+          class="suggestion-item"
+          ng-click="$ctrl.chooseSuggestion(place)"
+          data-testid="suggestion-item"
+        >
+          <strong>{{ place.name }}</strong>
+          <span>{{ place.admin1 ? place.admin1 + ", " : "" }}{{ place.country }}</span>
+        </button>
+      </li>
+    </ul>
+
+    <p class="status-text" ng-if="$ctrl.searching && !$ctrl.suggestions.length" data-testid="search-status">
+      Looking up cities…
+    </p>
+    <p class="error-text" ng-if="$ctrl.error" data-testid="error-message" role="alert">
+      {{ $ctrl.error }}
+    </p>
+  </form>
+
+  <div class="chip-section" ng-if="$ctrl.recents.length">
+    <h2>Recent</h2>
+    <div class="chip-row">
+      <button
+        type="button"
+        class="chip"
+        ng-repeat="place in $ctrl.recents"
+        ng-click="$ctrl.chooseSuggestion(place)"
+        data-testid="recent-city"
+      >
+        {{ place.name }}
+      </button>
+    </div>
+  </div>
+
+  <div class="chip-section">
+    <h2>Live around the world</h2>
+    <div class="world-grid" data-testid="world-grid">
+      <button
+        type="button"
+        class="world-card"
+        ng-repeat="place in $ctrl.world"
+        ng-click="$ctrl.chooseSuggestion(place)"
+        data-testid="popular-city"
+      >
+        <span class="world-top">
+          <span aria-hidden="true">{{ place.flag }}</span>
+          <weather-icon ng-if="place.meta" type="place.meta.icon" size="sm"></weather-icon>
+        </span>
+        <strong>{{ place.name }}</strong>
+        <span class="world-meta">{{ place.country }}</span>
+        <span class="world-temp" ng-if="place.temperature != null">
+          {{ $ctrl.displayTemp(place.temperature) }}°
+        </span>
+        <span class="world-meta" ng-if="place.meta">{{ place.meta.label }}</span>
+      </button>
+    </div>
+  </div>
+</section>

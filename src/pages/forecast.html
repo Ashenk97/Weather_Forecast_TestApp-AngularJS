@@ -1,0 +1,214 @@
+<section class="page forecast-page">
+  <div class="forecast-toolbar">
+    <a class="text-link" href="#/" data-testid="back-to-search">← New search</a>
+    <p class="local-clock" ng-if="$ctrl.clock" data-testid="local-clock">
+      {{ $ctrl.clock }} · {{ $ctrl.forecast.timezone }}
+    </p>
+    <div class="day-switch" role="navigation" aria-label="Forecast length">
+      <a ng-href="#/forecast/2" ng-class="{ active: $ctrl.days === '2' }" data-testid="forecast-days-2">2 days</a>
+      <a ng-href="#/forecast/5" ng-class="{ active: $ctrl.days === '5' }" data-testid="forecast-days-5">5 days</a>
+      <a ng-href="#/forecast/7" ng-class="{ active: $ctrl.days === '7' }" data-testid="forecast-days-7">7 days</a>
+    </div>
+  </div>
+
+  <div class="skeleton-dash" ng-if="$ctrl.loading" data-testid="loading-indicator">
+    <div class="skel skel-hero"></div>
+    <div class="skel-grid">
+      <div class="skel"></div>
+      <div class="skel"></div>
+    </div>
+    <p>Building the live dashboard for {{ $ctrl.city.label }}…</p>
+  </div>
+
+  <div class="error-panel" ng-if="!$ctrl.loading && $ctrl.error" data-testid="error-message" role="alert">
+    <p>{{ $ctrl.error }}</p>
+    <button type="button" class="primary-btn" ng-click="$ctrl.retry()" data-testid="retry-btn">
+      Try again
+    </button>
+  </div>
+
+  <div ng-if="!$ctrl.loading && $ctrl.forecast" data-testid="forecast-results">
+    <article class="current-card" aria-live="polite">
+      <div class="current-copy">
+        <p class="eyebrow">{{ $ctrl.city.label }}</p>
+        <div class="temp-row">
+          <weather-icon type="$ctrl.forecast.current.meta.icon" size="lg"></weather-icon>
+          <p class="current-temp" data-testid="current-temp">
+            {{ $ctrl.displayTemp($ctrl.forecast.current.temperature) }}<span>{{ $ctrl.tempUnit() }}</span>
+          </p>
+        </div>
+        <h1 class="condition" data-testid="weather-condition">
+          {{ $ctrl.forecast.current.meta.label }}
+        </h1>
+        <p class="feels-like">
+          Feels like {{ $ctrl.displayTemp($ctrl.forecast.current.feelsLike) }}{{ $ctrl.tempUnit() }}
+        </p>
+      </div>
+
+      <div class="hero-side">
+        <div class="aqi-badge aqi-{{ $ctrl.forecast.air.tone }}" ng-if="$ctrl.forecast.air.value != null" data-testid="aqi-badge">
+          <span>US AQI {{ $ctrl.forecast.air.value }}</span>
+          <strong>{{ $ctrl.forecast.air.label }}</strong>
+        </div>
+        <dl class="stat-grid">
+          <div>
+            <dt>Humidity</dt>
+            <dd data-testid="humidity">{{ $ctrl.forecast.current.humidity }}%</dd>
+          </div>
+          <div>
+            <dt>Wind</dt>
+            <dd data-testid="wind">
+              {{ $ctrl.displayWind($ctrl.forecast.current.wind) }} {{ $ctrl.windUnit() }}
+              {{ $ctrl.forecast.current.windDirection }}
+            </dd>
+          </div>
+          <div>
+            <dt>Clouds</dt>
+            <dd>{{ $ctrl.forecast.current.cloudCover }}%</dd>
+          </div>
+          <div>
+            <dt>UV index</dt>
+            <dd>
+              {{ $ctrl.forecast.daily[0].uv | number:1 }}
+              · {{ $ctrl.uvLabel($ctrl.forecast.daily[0].uv) }}
+            </dd>
+          </div>
+        </dl>
+      </div>
+    </article>
+
+    <div class="dash-grid">
+      <section class="panel">
+        <div class="panel-head">
+          <h2>Temperature & rain</h2>
+        </div>
+        <div class="chart-wrap">
+          <hourly-chart
+            hours="$ctrl.forecast.hourly"
+            unit="$ctrl.cityService.unit"
+            convert-temp="$ctrl.displayTemp(value)"
+          ></hourly-chart>
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="panel-head">
+          <h2>Location</h2>
+        </div>
+        <weather-map
+          lat="$ctrl.city.latitude"
+          lon="$ctrl.city.longitude"
+          label="{{ $ctrl.city.label }}"
+        ></weather-map>
+      </section>
+    </div>
+
+    <div class="widget-grid">
+      <section class="panel widget">
+        <h2>Wind</h2>
+        <div class="compass" aria-hidden="true">
+          <span class="compass-n">N</span>
+          <span
+            class="compass-needle"
+            ng-style="{ transform: 'rotate(' + $ctrl.forecast.current.windDegrees + 'deg)' }"
+          ></span>
+        </div>
+        <p class="widget-value">
+          {{ $ctrl.displayWind($ctrl.forecast.current.wind) }} {{ $ctrl.windUnit() }}
+        </p>
+        <p class="widget-sub">
+          Gusts {{ $ctrl.displayWind($ctrl.forecast.current.gusts) }} {{ $ctrl.windUnit() }}
+        </p>
+      </section>
+
+      <section class="panel widget">
+        <h2>UV index</h2>
+        <div class="meter">
+          <div
+            class="meter-fill"
+            ng-style="{ width: $ctrl.uvPercent($ctrl.forecast.daily[0].uv) + '%' }"
+          ></div>
+        </div>
+        <p class="widget-value">{{ $ctrl.forecast.daily[0].uv | number:1 }}</p>
+        <p class="widget-sub">{{ $ctrl.uvLabel($ctrl.forecast.daily[0].uv) }}</p>
+      </section>
+
+      <section class="panel widget">
+        <h2>Sun path</h2>
+        <svg class="sun-arc" viewBox="0 0 200 100" aria-hidden="true">
+          <path d="M30,80 A70,70 0 0 1 170,80" fill="none" stroke="currentColor" stroke-opacity="0.28" stroke-width="2" />
+          <circle
+            ng-attr-cx="{{ $ctrl.forecast.sun.cx }}"
+            ng-attr-cy="{{ $ctrl.forecast.sun.cy }}"
+            r="7"
+            fill="#f4c16e"
+          />
+        </svg>
+        <p class="widget-sub">
+          Rise {{ $ctrl.forecast.sun.sunrise }} · Set {{ $ctrl.forecast.sun.sunset }}
+        </p>
+      </section>
+
+      <section class="panel widget" ng-if="$ctrl.forecast.air.value != null">
+        <h2>Air quality</h2>
+        <p class="widget-value">{{ $ctrl.forecast.air.value }}</p>
+        <p class="widget-sub">{{ $ctrl.forecast.air.label }}</p>
+        <p class="widget-sub" ng-if="$ctrl.forecast.airDetails.pm25 != null">
+          PM2.5 {{ $ctrl.forecast.airDetails.pm25 }} · PM10 {{ $ctrl.forecast.airDetails.pm10 }}
+        </p>
+      </section>
+    </div>
+
+    <section class="panel">
+      <div class="panel-head">
+        <h2>Atmosphere</h2>
+      </div>
+      <dl class="metric-row">
+        <div>
+          <dt>Pressure</dt>
+          <dd>{{ $ctrl.displayPressure($ctrl.forecast.current.pressure) }} {{ $ctrl.pressureUnit() }}</dd>
+        </div>
+        <div>
+          <dt>Visibility</dt>
+          <dd>{{ $ctrl.displayVisibility($ctrl.forecast.current.visibilityKm) }} {{ $ctrl.visibilityUnit() }}</dd>
+        </div>
+        <div>
+          <dt>Dew point</dt>
+          <dd>{{ $ctrl.displayTemp($ctrl.forecast.current.dewPoint) }}{{ $ctrl.tempUnit() }}</dd>
+        </div>
+        <div>
+          <dt>Precip now</dt>
+          <dd>{{ $ctrl.forecast.current.precipitation }} mm</dd>
+        </div>
+      </dl>
+    </section>
+
+    <section class="panel">
+      <div class="panel-head">
+        <h2>Next 24 hours</h2>
+      </div>
+      <div class="hourly-strip" data-testid="hourly-strip">
+        <article class="hour-card" ng-repeat="hour in $ctrl.forecast.hourly" data-testid="hourly-item">
+          <p class="hour-label">{{ hour.label }}</p>
+          <weather-icon type="hour.meta.icon" size="sm"></weather-icon>
+          <p class="hour-temp">{{ $ctrl.displayTemp(hour.temperature) }}°</p>
+          <p class="hour-pop">{{ hour.precipitation || 0 }}%</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="panel">
+      <div class="panel-head">
+        <h2>{{ $ctrl.days }}-day outlook</h2>
+      </div>
+      <div class="daily-grid">
+        <weather-card
+          ng-repeat="day in $ctrl.daily"
+          day="day"
+          unit="$ctrl.tempUnit()"
+          convert-temp="$ctrl.displayTemp(value)"
+        ></weather-card>
+      </div>
+    </section>
+  </div>
+</section>

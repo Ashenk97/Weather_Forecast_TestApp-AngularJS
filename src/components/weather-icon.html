@@ -1,0 +1,13 @@
+<span class="wx-icon wx-{{ $ctrl.size || 'md' }}" ng-attr-data-icon="{{ $ctrl.type }}" aria-hidden="true">
+  <span class="wx-sun" ng-if="$ctrl.type === 'sun' || $ctrl.type === 'partly-cloudy-day'"></span>
+  <span class="wx-moon" ng-if="$ctrl.type === 'moon' || $ctrl.type === 'partly-cloudy-night'"></span>
+  <span
+    class="wx-cloud"
+    ng-if="$ctrl.type === 'partly-cloudy-day' || $ctrl.type === 'partly-cloudy-night' || $ctrl.type === 'overcast' || $ctrl.type === 'cloudy' || $ctrl.type === 'drizzle' || $ctrl.type === 'rain' || $ctrl.type === 'snow' || $ctrl.type === 'storm' || $ctrl.type === 'fog'"
+  ></span>
+  <span class="wx-cloud wx-cloud-back" ng-if="$ctrl.type === 'overcast' || $ctrl.type === 'storm'"></span>
+  <span class="wx-drops" ng-if="$ctrl.type === 'drizzle' || $ctrl.type === 'rain' || $ctrl.type === 'storm'"></span>
+  <span class="wx-flakes" ng-if="$ctrl.type === 'snow'"></span>
+  <span class="wx-bolt" ng-if="$ctrl.type === 'storm'"></span>
+  <span class="wx-fog" ng-if="$ctrl.type === 'fog'"></span>
+</span>

@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#1d4f7a" />
+    <meta
+      name="description"
+      content="Skycast is a live weather dashboard with maps, hourly charts, air quality, and 7-day outlooks."
+    />
+    <title>Skycast · Live Weather Dashboard</title>
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,650&family=Outfit:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body ng-controller="AppController as app" ng-cloak ng-attr-data-sky="{{ app.sky.theme }}">
+    <div class="sky" aria-hidden="true">
+      <div class="sky-wash"></div>
+      <div class="sun-glow"></div>
+      <div class="moon-glow"></div>
+      <div class="stars"></div>
+      <div class="cloud-drift c1"></div>
+      <div class="cloud-drift c2"></div>
+      <div class="cloud-drift c3"></div>
+      <div class="precip rain"></div>
+      <div class="precip snow"></div>
+      <div class="fog-sheet"></div>
+      <div class="lightning"></div>
+      <div class="grain"></div>
+    </div>
+
+    <header class="topbar">
+      <a class="brand" href="#/" data-testid="brand-link">
+        <span class="brand-mark" aria-hidden="true"></span>
+        Skycast
+      </a>
+      <div class="topbar-actions">
+        <div class="unit-toggle" role="group" aria-label="Temperature unit" data-testid="unit-toggle">
+          <button
+            type="button"
+            ng-class="{ active: app.city.unit === 'C' }"
+            ng-click="app.setUnit('C')"
+            data-testid="unit-c"
+          >
+            °C
+          </button>
+          <button
+            type="button"
+            ng-class="{ active: app.city.unit === 'F' }"
+            ng-click="app.setUnit('F')"
+            data-testid="unit-f"
+          >
+            °F
+          </button>
+        </div>
+        <a class="nav-home" href="#/" data-testid="home-link">Home</a>
+      </div>
+    </header>
+
+    <main class="shell">
+      <div class="view-stage" ng-view></div>
+    </main>
+
+    <footer class="site-footer">
+      Weather by
+      <a href="https://open-meteo.com/" target="_blank" rel="noopener noreferrer">Open-Meteo</a>
+      · Maps by
+      <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">OSM</a>
+      /
+      <a href="https://carto.com/" target="_blank" rel="noopener noreferrer">CARTO</a>
+    </footer>
+
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>
